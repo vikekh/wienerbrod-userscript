@@ -30,6 +30,7 @@
         if (window.top != window.self)
             return;
         
+        alert('foo');
         this.traverse();
     };
     
