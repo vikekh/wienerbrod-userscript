@@ -16,13 +16,15 @@
         debug: true,
         replace: {
             wienerbrod: {
-                from: 'neger',
-                to: 'choklad'
+                from: 'choklad',
+                to: 'neger'
             }
         }
     };
     
     // private vars
+
+    var replacers = {};
     
     // public methods
     
@@ -30,29 +32,48 @@
         if (window.top != window.self)
             return;
         
-        alert('foo');
-        this.traverse();
+        prepare();
+        traverse();
     };
     
     // private methods
+
+    function prepare() {
+        for (var id in wienerbrod.settings.replace) {
+            if (wienerbrod.settings.replace.hasOwnProperty(id)) {
+                var pattern = '(' + wienerbrod.settings.replace[id].from + ')';
+                replacers[id] = {
+                    re: new RegExp(pattern, 'gi'),
+                    func: replacer.bind(this, wienerbrod.settings.replace[id].to)
+                };
+            }
+        }
+    }
+
+    function replace($elem) {
+        for (var id in wienerbrod.settings.replace) {
+            if (wienerbrod.settings.replace.hasOwnProperty(id)) {
+                var old = $elem.text(),
+                    text = old.replace(replacers[id].re, replacers[id].func);
+
+                if (text !== old)
+                    $elem.text(text);
+            }
+        }
+    }
     
     function replacer(replace, match, p1) {
-        return '<span style="background-color: #f00;">' + replace + '</span>';
+        console.dir(arguments);
+        return replace;
     }
     
     function traverse() {
-        var $elems = $('*').contents().filter(function () { return this.nodeType === 3; });
-        
-        for (var id in wienerbrod.settings.replace) {
-            if (wienerbrod.settings.replace.hasOwnProperty(id)) {
-                var re = new RegExp('(' + wienerbrod.settings.replace[id].from + ')', 'gi');
-                
-                $elems.each(function () {
-                    var $elem = $(this);
-                    $elem.text($elem.text().replace(re, replacer.bind(this, wienerbrod.settings.replace[id].to)));
-                });
-            }
-        }
+        $('*').each(function () {
+            var $elem = $(this);
+
+            if ($elem.children().length === 0)
+                replace($elem);
+        });
     }
     
 })(window.wienerbrod = window.wienerbrod || {}, jQuery);
