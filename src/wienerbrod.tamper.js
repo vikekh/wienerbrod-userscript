@@ -16,7 +16,7 @@
         debug: true,
         replace: {
             wienerbrod: {
-                from: 'choklad',
+                from: 'Choklad',
                 to: 'neger'
             }
         }
@@ -63,17 +63,27 @@
     }
     
     function replacer(replace, match, p1) {
-        console.dir(arguments);
         return replace;
     }
     
-    function traverse() {
-        $('*').each(function () {
-            var $elem = $(this);
+    function traverse($node) {
+        if (typeof $node === 'undefined')
+            $node = $('body');
 
-            if ($elem.children().length === 0)
-                replace($elem);
-        });
+        $node.contents()
+            .filter(function () {
+                return this.nodeType === 3;
+            })
+            .each(function () {
+                replace($(this));
+            })
+            .end()
+            .filter(function () {
+                return this.nodeType === 1;
+            })
+            .each(function () {
+                traverse($(this));
+            });
     }
     
 })(window.wienerbrod = window.wienerbrod || {}, jQuery);
