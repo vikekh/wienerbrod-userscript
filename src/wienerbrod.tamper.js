@@ -16,8 +16,8 @@
         debug: true,
         replace: {
             wienerbrod: {
-                from: 'Choklad',
-                to: 'neger'
+                from: 'foo',
+                to: 'bar'
             }
         }
     };
